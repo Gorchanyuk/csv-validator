@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!-- Определяет тип документа и версию HTML (HTML5 в данном случае) -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <!-- Корневой элемент документа, атрибут lang указывает на основной язык содержимого -->
+  <head>
+    <!-- Секция, содержащая метаданные и заголовок документа -->
+    <meta charset="UTF-8">
+    <!-- Определяет кодировку символов документа (UTF-8) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="#">
+    <!-- Устанавливает масштабирование и ширину вьюпорта для мобильных устройств -->
+    <title>Отправить файл</title>
+    <!-- Заголовок документа, отображается в заголовке вкладки браузера -->
+    <style>
+      /* Стили для веб-страницы */
+      body {
+        font-family: Arial, sans-serif; /* Устанавливает шрифт для всего содержимого тела */
+        margin: 0; /* Убирает отступы у тела документа */
+        padding: 20px; /* Устанавливает внутренние отступы для тела документа */
+        background-color: #f7f7f7; /* Устанавливает цвет фона для тела документа */
+      }
+      .upload-container {
+        background-color: #fff; /* Цвет фона контейнера загрузки */
+        padding: 20px; /* Внутренние отступы контейнера загрузки */
+        border-radius: 5px; /* Скругление углов контейнера загрузки */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Тень контейнера загрузки */
+      }
+      .upload-btn {
+        margin-left: 10px;
+        margin-top: 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+      }
+      .upload-btn:hover {
+        background-color: #0057b3c2; /* Цвет фона кнопки при наведении */
+      }
+      .wrapAction {
+        width: 500px;
+        display: flex;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Основное содержимое документа -->
+    <div class="upload-container">
+      <!-- Контейнер для загрузки файлов -->
+      <h2>Отправить файл</h2>
+      <!-- Заголовок контейнера -->
+      <div class="wrapAction">
+        <input type="file" id="fileInput">
+        <!-- Поле для выбора файла -->
+        <button class="upload-btn">Отправить</button>
+        <!-- Кнопка для начала загрузки файла -->
+      </div>
+    </div>
+    <script th:data-upload-url="@{/csv/validator/upload}">
+      // JavaScript-код для обработки загрузки файла
+      document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.getElementById("fileInput"); // Получение элемента ввода файла
+        const uploadBtn = document.querySelector(".upload-btn"); // Получение кнопки загрузки
+
+        // Скрыть кнопку загрузки по умолчанию
+        uploadBtn.style.display = "none";
+
+        // Обработчик события изменения для fileInput
+        fileInput.addEventListener("change", function () {
+          // Показать кнопку, если файл выбран, иначе скрыть
+          uploadBtn.style.display =
+            fileInput.files.length > 0 ? "block" : "none";
+        });
+
+        function uploadFile() {
+          const file = fileInput.files[0]; // Получение выбранного файла
+
+          if (file) {
+            // Проверка, выбран ли файл
+            const xhr = new XMLHttpRequest(); // Создание нового объекта XMLHttpRequest
+            const formData = new FormData(); // Создание нового объекта FormData
+
+            formData.append("file", file); // Добавление файла в объект FormData
+
+            // Настройка запроса на отправку методом POST на URL '/upload'
+            xhr.open(
+              "POST",
+              document.querySelector("script").dataset.uploadUrl,
+              true
+            );
+            xhr.onload = function () {
+              if (xhr.status === 200) {
+                // Проверка статуса ответа (200 означает успех)
+                alert("Успешная загрузка файла"); // Вывод сообщения об успешной загрузке
+              } else {
+                // Попытка распарсить JSON-ответ
+                try {
+                  const response = JSON.parse(xhr.responseText);
+                  alert(response.message); // Вывод сообщения из поля message
+                } catch (e) {
+                  alert("Ошибка загрузки файла"); // Вывод сообщения об ошибке, если JSON не удалось распарсить
+                }
+              }
+            };
+            xhr.onerror = function () {
+              // Функция обратного вызова, вызываемая при ошибке запроса
+              alert("Ошибка загрузки файла"); // Вывод сообщения об ошибке
+            };
+            xhr.send(formData); // Отправка запроса с данными формы
+          } else {
+            alert("Выберите файл"); // Вывод сообщения, если файл не выбран
+          }
+        }
+        // Добавление обработчика клика для кнопки загрузки
+        uploadBtn.addEventListener("click", uploadFile);
+      });
+    </script>
+  </body>
+</html>

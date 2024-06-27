@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%d{yyyy-MMM-dd HH:mm:ss} %color{%-5level} [%t]  %color{%logger{}} - %msg %n{TRACE=white, DEBUG=green, INFO=blue, WARN=purple, ERROR=red, FATAL=reverse, OFF=white}"/>
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+
+        <RollingFile name="DEBUG" fileName="logs/debug.log" filePattern="logs/debug-%d{yyyy-MM-dd}.log.gz">
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss} %-5level [%t] %logger{} - %msg %n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="30" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="INFO" fileName="logs/info.log" filePattern="logs/info-%d{yyyy-MM-dd}.log.gz">
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss} %-5level [%t] %logger{} - %msg %n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="30" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="WARN" fileName="logs/warn.log" filePattern="logs/warn-%d{yyyy-MM-dd}.log.gz">
+                <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss} %-5level [%t] %logger{} - %msg %n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="30" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="ERROR" fileName="logs/error.log" filePattern="logs/error-%d{yyyy-MM-dd}.log.gz">
+            <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss} %-5level [%t] %logger{} - %msg %n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="30" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="logs/" maxDepth="1">
+                    <IfFileName glob="*.log.gz" />
+                    <IfLastModified age="365d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="INFO"/>
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="WARN"/>
+            <AppenderRef ref="ERROR"/>
+        </Root>
+        <Logger name="ccrsr.ru" level="debug">
+            <AppenderRef ref="DEBUG"/>
+        </Logger>
+    </Loggers>
+</Configuration>
